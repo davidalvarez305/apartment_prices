@@ -1,5 +1,6 @@
 from datetime import datetime
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
@@ -7,13 +8,19 @@ from sheets import get_values
 
 def get_prices(url, range, sheet_id):
 
+    options = Options()
+    user_agent = 'Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101 Firefox/104.0'
+    options.add_argument("--headless")
+    options.add_argument(f'user-agent={user_agent}')
+
     driver = webdriver.Chrome(service=Service(
-        ChromeDriverManager().install()))
+        ChromeDriverManager().install()), options=options)
 
     driver.get(url)
 
     apts = []
     grids = driver.find_elements(By.CLASS_NAME, "pricingGridItem")
+
     for grid in grids:
         containers = grid.find_elements(By.CLASS_NAME, "grid-container")
         for container in containers:
@@ -79,7 +86,6 @@ def get_prices(url, range, sheet_id):
         vals[7] = apt['availability']
 
         apartments.append(vals)
-
     rows += apartments
 
     return rows
