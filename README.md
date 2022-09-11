@@ -55,3 +55,9 @@ Step (4): Install Chrome Driver.
 ```
 pip install webdriver-manager
 ```
+
+Step (5): Install the Google Client library.
+
+```
+pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+```
