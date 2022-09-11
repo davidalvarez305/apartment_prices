@@ -1,3 +1,4 @@
+from lib2to3.pytree import Base
 import os
 from dotenv import load_dotenv
 from apartments import get_prices
@@ -16,9 +17,12 @@ def main():
 
         range = f"{tab_name}!C:J"
 
-        rows = get_prices(url=url, range=range, sheet_id=SHEET_ID)
+        try:
+            rows = get_prices(url=url, range=range, sheet_id=SHEET_ID)
 
-        write_values(spreadsheet_id=SHEET_ID, range=range, values=rows)
+            write_values(spreadsheet_id=SHEET_ID, range=range, values=rows)
+        except BaseException as err:
+            print(err)
 
     send_mail()
 
