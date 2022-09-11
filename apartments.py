@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -9,7 +10,7 @@ from sheets import get_values
 def get_prices(url, range, sheet_id):
 
     options = Options()
-    user_agent = 'Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101 Firefox/104.0'
+    user_agent = str(os.environ.get('USER_AGENT'))
     options.add_argument("--headless")
     options.add_argument(f'user-agent={user_agent}')
 

@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from apartments import get_prices
+from gmail import send_mail
 
 from sheets import get_values, write_values
 
@@ -18,6 +19,8 @@ def main():
         rows = get_prices(url=url, range=range, sheet_id=SHEET_ID)
 
         write_values(spreadsheet_id=SHEET_ID, range=range, values=rows)
+
+    send_mail()
 
 if __name__ == "__main__":
     main()
