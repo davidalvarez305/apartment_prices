@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+from dotenv import load_dotenv
 
 
 options = Options()
@@ -10,6 +11,7 @@ options = Options()
 
 
 def main():
+    load_dotenv()
     driver = webdriver.Chrome(service=Service(
         ChromeDriverManager().install()), options=options)
 
