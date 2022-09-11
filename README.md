@@ -1,10 +1,10 @@
 In order to run this program, first install the following software packages on your computer:
 
-Step (0) - Open a terminal:
+Step (0): Open a terminal.
 
-```
 Follow one of the methods shown in this video to open your terminal:
 
+```
 https://www.youtube.com/watch?v=8OFD_F5L_vk&ab_channel=Chris%27Tutorials
 ```
 
