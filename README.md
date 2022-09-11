@@ -1,3 +1,12 @@
+To run this program:
+
+Navigate to the folder where you saved this project, then run the following command:
+
+```
+python main.py
+```
+
+
 In order to run this program, first install the following software packages on your computer:
 
 Step (0): Open a terminal.
@@ -26,4 +35,22 @@ Step (2): Install python.
 
 ```
 brew install python
+```
+
+Check that python 3 was installed correctly:
+
+```
+python --version
+```
+
+Step (3): Install selenium.
+
+```
+pip install selenium
+```
+
+Step (4): Install Chrome Driver.
+
+```
+pip install webdriver-manager
 ```
