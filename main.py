@@ -1,9 +1,13 @@
+from datetime import datetime
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from dotenv import load_dotenv
+
+from sheets import get_values, write_values
 
 
 options = Options()
@@ -12,6 +16,9 @@ options = Options()
 
 def main():
     load_dotenv()
+
+    SHEET_ID = str(os.environ.get('SPREADSHEET'))
+
     driver = webdriver.Chrome(service=Service(
         ChromeDriverManager().install()), options=options)
 
@@ -59,10 +66,35 @@ def main():
                 unit['beds'] = tags[0].get_attribute('innerHTML').split('bed')[0].strip()
             unit['baths'] = tags[1].get_attribute('innerHTML').split('bath')[0].strip()
 
+            if "price" in unit:
+                converted_price = float(unit['price'].split("$")[1].replace(",", ""))
+                converted_size = int(unit['size'].replace(",", ""))
+                unit['priceSqFt'] = "$" + str(round(converted_price / converted_size, 2))
+            else:
+                unit['priceSqFt'] = '0'
+
             if "name" in unit:
                 apts.append(unit)
 
-    print(apts)
+    rows = get_values(spreadsheet_id=SHEET_ID, range='District West Gables!C:J')
 
+    apartments = []
+    for apt in apts:
+        print('beds: ', apt['beds'])
+        vals = [''] * len(rows[0])
+        vals[0] = datetime.today().strftime('%d/%m/%Y')
+        vals[1] = apt['name']
+        vals[2] = apt['beds']
+        vals[3] = apt['baths']
+        vals[4] = apt['size']
+        vals[5] = apt['price']
+        vals[6] = apt['priceSqFt']
+        vals[7] = apt['availability']
+
+        apartments.append(vals)
+
+    rows += apartments
+
+    write_values(spreadsheet_id=SHEET_ID, range='District West Gables!C:J', values=rows)
 
 main()

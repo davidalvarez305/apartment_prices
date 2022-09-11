@@ -3,50 +3,41 @@ import os
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import auth
-from dotenv import load_dotenv
 
 
-def sheets():
-    load_dotenv()
-
-    # The ID and range of a sample spreadsheet.
-    SPREADSHEET_ID = str(os.environ.get('SPREADSHEET'))
-    DESIRED_NAME_RANGE = 'Testing bot!A:Z'
-
-
+def write_values(spreadsheet_id, range, values):
     try:
-        creds = auth.get_auth()
-        service = build('sheets', 'v4', credentials=creds)
+        credentials = auth.get_auth()
+        service = build('sheets', 'v4', credentials=credentials)
 
         # Call the Sheets API
         sheet = service.spreadsheets()
 
         body = {
-            "values": [
-                ['', '', "This will start on C1"],
-                ['C', 'D']
-            ]
+            "values": values
         }
 
-        try:
-            sheet.values().update(
-                spreadsheetId=SPREADSHEET_ID, range=DESIRED_NAME_RANGE,
-                valueInputOption="USER_ENTERED", body=body).execute()
-        except BaseException as err:
-            print("couldn't write")
-
-        result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
-                                    range=DESIRED_NAME_RANGE).execute()
-        values = result.get('values', [])
-
-        if not values:
-            print('No data found.')
-            return
-
-        for row in values:
-            print(row)
+        sheet.values().update(
+            spreadsheetId=spreadsheet_id, range=range,
+            valueInputOption="USER_ENTERED", body=body).execute()
     except HttpError as err:
         print(err)
 
 
-sheets()
+def get_values(spreadsheet_id, range):
+    try:
+        credentials = auth.get_auth()
+        service = build('sheets', 'v4', credentials=credentials)
+
+        sheet = service.spreadsheets()
+
+        result = sheet.values().get(spreadsheetId=spreadsheet_id,
+                                    range=range).execute()
+        values = result.get('values', [])
+
+        if not values:
+            return []
+
+        return values
+    except HttpError as err:
+        print(err)
