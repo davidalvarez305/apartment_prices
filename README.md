@@ -6,6 +6,7 @@ Navigate to the folder where you saved this project, then run the following comm
 python main.py
 ```
 
+Before you can do that, you need to install all of the required software listed below.
 
 In order to run this program, first install the following software packages on your computer:
 
