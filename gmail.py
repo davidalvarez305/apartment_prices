@@ -16,9 +16,7 @@ def send_mail():
         message = EmailMessage()
 
         message.set_content(f'''
-        
-        'The sheet has been updated on ' + {datetime.today().strftime('%d/%m/%Y')}
-        \n
+        The sheet has been updated on {datetime.today().strftime('%d/%m/%Y')}
         \n
         Click the linkerino: {str(os.environ.get('SPREADSHEET_LINK'))}
         ''')
