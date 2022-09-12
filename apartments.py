@@ -77,7 +77,7 @@ def get_prices(url, range, sheet_id):
     apartments = []
     for apt in apts:
         vals = [''] * len(rows[0])
-        vals[0] = datetime.today().strftime('%d/%m/%Y')
+        vals[0] = datetime.today().strftime('%m/%d/%Y')
         vals[1] = apt['name']
         vals[2] = apt['beds']
         vals[3] = apt['baths']
