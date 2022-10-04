@@ -7,9 +7,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from sheets import get_values
 
-def get_apt_details(container, selector):
-    text = container.find_element(
-                    By.CSS_SELECTOR, selector).get_attribute('innerText').strip().split('\n')[1]
+def get_apt_details(element):
+    text = element.get_attribute('innerText').strip().split('\n')[1]
     return text
 
 def get_prices(url, range, sheet_id):
@@ -22,6 +21,16 @@ def get_prices(url, range, sheet_id):
         ChromeDriverManager().install()), options=options)
 
     driver.get(url)
+
+    expand_btns = driver.find_elements(By.XPATH, '//button[@class="js-priceGridShowMoreLabel"]')
+
+    for btn in expand_btns:
+        if "Show More" in btn.get_attribute('innerText'):
+            try:
+                btn.click()
+            except BaseException as err:
+                print(err)
+                continue
 
     apts = []
     grids = driver.find_elements(By.CLASS_NAME, "hasUnitGrid")
@@ -46,22 +55,24 @@ def get_prices(url, range, sheet_id):
         grid_baths = tags[1].get_attribute(
             'innerText').split('bath')[0]
 
-        containers = grid.find_elements(By.CLASS_NAME, "grid-container")
+        containers = grid.find_elements(By.CSS_SELECTOR, "div.grid-container.js-unitExtension")
         for container in containers:
+
             try:
+                elements = container.find_elements(By.XPATH, "./child::*")
                 unit = {}
 
-                # Get Unit Name
-                unit['name'] = get_apt_details(container, 'button.unitBtn')
-                
-                # Get Unit Price
-                unit['price'] = get_apt_details(container, "div.pricingColumn")
+                for element in elements:
+                    element_text = element.get_attribute('innerText')
 
-                # Get Sqt. Ft
-                unit['size'] = get_apt_details(container, "div.sqftColumn")
-
-                # Get Availability
-                unit['availability'] = get_apt_details(container, "div.availableColumnInnerContainer")
+                    if "Unit" in element_text:
+                        unit['name'] = get_apt_details(element)
+                    if "price" in element_text:
+                        unit['price'] = get_apt_details(element)
+                    if "square feet" in element_text:
+                        unit['size'] = get_apt_details(element)
+                    if "availibility" in element_text:
+                        unit['availability'] = get_apt_details(element)
 
                 # Get Bed & Baths
                 unit['beds'] = grid_beds
@@ -87,10 +98,11 @@ def get_prices(url, range, sheet_id):
                 if "name" in unit:
                     apts.append(unit)
 
-            except BaseException:
+            except BaseException as err:
+                print(err)
                 continue
 
-
+    print('apts: ', len(apts))
     try:
         rows = get_values(spreadsheet_id=sheet_id, range=range)
 
