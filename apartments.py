@@ -63,7 +63,7 @@ def get_prices(url, range, sheet_id):
                 tags = details.find_elements(By.TAG_NAME, "span")
                 beds = tags[0].get_attribute('innerHTML')
                 if "Studio" in beds:
-                    unit['beds'] = "Studio"
+                    unit['beds'] = 0.5
                 else:
                     unit['beds'] = tags[0].get_attribute(
                         'innerHTML').split('bed')[0].strip()
