@@ -4,12 +4,15 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import WebDriverException   
 from selenium.webdriver.common.by import By
 from sheets import get_values
 
 def get_apt_details(element):
-    text = element.get_attribute('innerText').strip().split('\n')[1]
-    return text
+    text = element.get_attribute('innerText').strip().split('\n')
+    if len(text) < 2:
+        text = element.get_attribute('innerText').strip().split(' ')
+    return text[1]
 
 def get_prices(url, range, sheet_id):
     options = Options()
@@ -25,11 +28,10 @@ def get_prices(url, range, sheet_id):
     expand_btns = driver.find_elements(By.XPATH, '//button[@class="js-priceGridShowMoreLabel"]')
 
     for btn in expand_btns:
-        if "Show More" in btn.get_attribute('innerText'):
+        if "Show More" in btn.get_attribute('innerText') and btn.is_enabled():
             try:
                 btn.click()
-            except BaseException as err:
-                print(err)
+            except WebDriverException:
                 continue
 
     apts = []
@@ -65,7 +67,7 @@ def get_prices(url, range, sheet_id):
                 for element in elements:
                     element_text = element.get_attribute('innerText')
 
-                    if "Unit" in element_text:
+                    if "Unit" in element_text and not "availibility" in element_text:
                         unit['name'] = get_apt_details(element)
                     if "price" in element_text:
                         unit['price'] = get_apt_details(element)
@@ -98,11 +100,8 @@ def get_prices(url, range, sheet_id):
                 if "name" in unit:
                     apts.append(unit)
 
-            except BaseException as err:
-                print(err)
+            except Exception:
                 continue
-
-    print('apts: ', len(apts))
     try:
         rows = get_values(spreadsheet_id=sheet_id, range=range)
 

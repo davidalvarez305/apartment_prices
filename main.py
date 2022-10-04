@@ -21,7 +21,7 @@ def main():
             print("Getting prices for: ", tab_name)
             rows = get_prices(url=url, range=range, sheet_id=SHEET_ID)
 
-            # write_values(spreadsheet_id=SHEET_ID, range=range, values=rows)
+            write_values(spreadsheet_id=SHEET_ID, range=range, values=rows)
             print("Wrote values for: ", tab_name)
         except BaseException as err:
             print(f"{tab_name} failed. {err}")
