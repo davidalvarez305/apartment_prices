@@ -1,6 +1,5 @@
 from datetime import datetime
 import os
-from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -13,8 +12,7 @@ def get_apt_details(container, selector):
                     By.CSS_SELECTOR, selector).get_attribute('innerText').strip().split('\n')[1]
     return text
 
-def get_prices():
-    load_dotenv()
+def get_prices(url, range, sheet_id):
     options = Options()
     user_agent = str(os.environ.get('USER_AGENT'))
     options.add_argument("--headless")
@@ -23,8 +21,7 @@ def get_prices():
     driver = webdriver.Chrome(service=Service(
         ChromeDriverManager().install()), options=options)
 
-    driver.get(
-        'https://www.apartments.com/district-west-gables-west-miami-fl/3f1qyse/')
+    driver.get(url)
 
     apts = []
     grids = driver.find_elements(By.CLASS_NAME, "hasUnitGrid")
@@ -79,7 +76,7 @@ def get_prices():
                 else:
                     unit['priceSqFt'] = '0'
 
-                # Concessions
+                # Get Concessions
                 concessions = driver.find_elements(
                     By.ID, 'rentSpecialsSection')
 
@@ -94,28 +91,27 @@ def get_prices():
                 continue
 
 
-"""  try:
-    rows = get_values(spreadsheet_id=sheet_id, range=range)
+    try:
+        rows = get_values(spreadsheet_id=sheet_id, range=range)
 
-    apartments = []
-    for apt in apts:
-        vals = [''] * len(rows[0])
-        vals[0] = datetime.today().strftime('%m/%d/%Y')
-        vals[1] = apt['name']
-        vals[2] = apt['beds']
-        vals[3] = apt['baths']
-        vals[4] = apt['size']
-        vals[5] = apt['price']
-        vals[6] = apt['priceSqFt']
-        vals[7] = apt['availability']
-        if 'concessions' in apt:
-            vals[8] = apt['concessions']
+        apartments = []
+        for apt in apts:
+            vals = [''] * len(rows[0])
+            vals[0] = datetime.today().strftime('%m/%d/%Y')
+            vals[1] = apt['name']
+            vals[2] = apt['beds']
+            vals[3] = apt['baths']
+            vals[4] = apt['size']
+            vals[5] = apt['price']
+            vals[6] = apt['priceSqFt']
+            vals[7] = apt['availability']
+            if 'concessions' in apt:
+                vals[8] = apt['concessions']
 
-        apartments.append(vals)
-    rows += apartments
+            apartments.append(vals)
+        rows += apartments
 
-    return rows
+        return rows
 
-except BaseException as err:
-    raise Exception(err) """
-get_prices()
+    except BaseException as err:
+        raise Exception(err)
