@@ -15,7 +15,7 @@ def main():
         tab_name = complex[0]
         url = complex[1]
 
-        range = f"{tab_name}!C:J"
+        range = f"{tab_name}!C:K"
 
         try:
             print("Getting prices for: ", tab_name)
